@@ -1,72 +1,80 @@
-
-let inscricoes = getData("inscricoes");
 let usuarios = getData("usuarios");
 let eventos = getData("eventos");
+let inscricoes = getData("inscricoes"); 
 
-let listaUsuario = document.getElementById("listaUsuario");
-let ListaEventos = document.getElementById("listaEventos");
 
-function render() {
-  const lista = document.getElementById("lista");
+function selecaodados() {
+  
+  const divUsuarios = document.getElementById("listausuarios");
+  divUsuarios.innerHTML = "";
+  const selectUsuarios = document.createElement("select");
+  selectUsuarios.id = "usuario";
+  usuarios.forEach((u, i) => {
+    const option = document.createElement("option");
+    option.value = i;
+    option.textContent = u.nome;
+    selectUsuarios.appendChild(option);
+  });
+  divUsuarios.appendChild(selectUsuarios);
+
+
+
+  const divEventos = document.getElementById("listaeventos");
+  divEventos.innerHTML = "";
+  const selectEventos = document.createElement("select");
+  selectEventos.id = "evento";
+  eventos.forEach((e, i) => {
+    const option = document.createElement("option");
+    option.value = i;
+    option.textContent = `${e.titulo} - ${e.data}`;
+    selectEventos.appendChild(option);
+  });
+  divEventos.appendChild(selectEventos);
+}
+
+
+function Inscricoes() {
+  const lista = document.getElementById("listaInscricoes");
   lista.innerHTML = "";
-
-  inscricoes.forEach((u, i) => {
+  inscricoes.forEach((i) => {
     lista.innerHTML += `
       <div>
-        ${u.nome} - ${u.titulo}
-        <button onclick="remover(${i})">X</button>
+        ${i.usuario} -  ${i.evento} - ${i.data}
       </div>
     `;
   });
 }
 
-function remover(i) {
-  inscricoes.splice(i, 1);
-  saveData("inscricoes", inscricoes);
-  render();
-}
 
-function populaSelectEventos() {
-
-usuarios.forEach((usuario) => {
-const selectUsuario = document.createElement("select");
-    selectUsuario.name = "usuario";
-    option = document.createElement("option");
-    option.value = usuario.nome;
-    option.textContet = usuario.nome; 
-
-    selectUsuario.appendChild(option);
-    
-})
-
-listaUsuario.appendChild(selectUsuario);
-
-
-    
-
-}
-
-document.getElementById("form").addEventListener("submit", e => {
+document.getElementById("form").addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const nome = document.getElementById("nome").value;
-  const titulo = document.getElementById("titulo").value;
+  const usuarioIndex = document.getElementById("usuario").value;
+  const eventoIndex = document.getElementById("evento").value;
 
-  inscricoes.push({ nome, titulo });
+  const usuario = usuarios[usuarioIndex];
+  const evento = eventos[eventoIndex];
+
+  const novaInscricao = {
+    usuario: usuario.nome,
+    evento: evento.titulo,
+    data: evento.data
+  };
+
+  inscricoes.push(novaInscricao);
   saveData("inscricoes", inscricoes);
 
-  e.target.reset();
-  render();
+  Inscricoes();
 });
 
-populaSelectEventos();
-
-render();
-
 function getData(key) {
-    return JSON.parse(localStorage.getItem(key)) || [];
-  }
-  
-  function saveData(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
-  }
+  return JSON.parse(localStorage.getItem(key)) || [];
+}
+
+function saveData(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+
+selecaodados();
+Inscricoes();
